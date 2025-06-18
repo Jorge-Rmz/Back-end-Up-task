@@ -8,13 +8,66 @@ export class ProjectController {
         try {
             await project.save();
             res.send("project created successfully");
-        }catch (error){
+        } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Error creating project' });
         }
     }
 
     static getAllProjects = async (req: Request, res: Response) => {
-        res.send('Get all projects');
+        try {
+            const projects = await Project.find({});
+            res.json(projects);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error al consultar los projectos' });
+        }
+    }
+
+    static getProjectById = async (req: Request, res: Response) => {
+        const { id } = req.params;
+        try {
+            const project = await Project.findById(id);
+            if (!project) {
+                const error = new Error('Proyecto no encontrado');
+                res.status(404).json({ error: error.message });
+            }
+            res.json(project);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error al consultar el proyecto' });
+        }
+    }
+
+    static updateProject = async (req: Request, res: Response) => {
+        const { id } = req.params;
+        try {
+            const project = await Project.findByIdAndUpdate(id, req.body);
+            if (!project) {
+                const error = new Error('Proyecto no encontrado');
+                res.status(404).json({ error: error.message });
+            }
+            await project.save();
+            res.send("Projecto actualizado");
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error al consultar el proyecto' });
+        }
+    }
+
+    static deleteProject = async (req: Request, res: Response) => {
+        const { id } = req.params;
+        try {
+            const project = await Project.findById(id);
+            if (!project) {
+                const error = new Error('Proyecto no encontrado');
+                res.status(404).json({ error: error.message });
+            }
+            await project.deleteOne();
+            res.send("Projecto eliminado");
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error al consultar el proyecto' });
+        }
     }
 }

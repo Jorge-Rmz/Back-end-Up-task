@@ -6,7 +6,6 @@ export const handleInputErors = (req: Request, res:Response, next: NextFunction)
 
     if (!errors.isEmpty()) {
         res.status(400).json({ errors: errors.array() });
-        return; 
     }
 
     next();
