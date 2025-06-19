@@ -1,4 +1,3 @@
-import { TaskStatus } from './Task';
 import mongoose, {Schema, Document, Types} from "mongoose";
 
 const taskStatus = {
@@ -40,4 +39,4 @@ const TaskSchema: Schema = new Schema({
     }
 },{timestamps: true});
 
-export const Project = mongoose.model<ITask>("Task", TaskSchema); 
+export const Task = mongoose.model<ITask>("Task", TaskSchema); 
