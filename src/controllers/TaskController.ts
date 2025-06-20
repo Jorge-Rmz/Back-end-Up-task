@@ -1,6 +1,6 @@
+
 import type { Request, Response } from 'express';
 import { Task } from '../models/Task';
-import { Project } from '../models/Project';
 
 export class TaskController {
     static createTask = async (req: Request, res: Response) => {
@@ -26,6 +26,53 @@ export class TaskController {
                 res.status(404).json({ message: 'No se encontraron tareas para este proyecto.' });
             }
             res.status(200).json(task);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error al buscar la tarea.' });
+        }
+    }
+    static getTaskById = async (req: Request, res: Response) => {
+        try {
+            res.status(200).json(req.task);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error al buscar la tarea.' });
+        }
+    }
+
+    static updateTask = async (req: Request, res: Response) => {
+        try {
+            req.task.taskName = req.body.taskName;
+            req.task.description = req.body.description;
+            await req.task.save();
+            res.status(200).json("Tarea actualizada exitosamente");
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error al buscar la tarea.' });
+        }
+    }
+
+    static deleteTask = async (req: Request, res: Response) => {
+        try {
+            req.project.tasks = req.project.tasks.filter(t => t.toString() !== req.task.id.toString());
+            await Promise.allSettled([
+                req.task.deleteOne(),
+                req.project.save()
+            ]);
+            res.status(200).json("Tarea eliminada exitosamente");
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error al buscar la tarea.' });
+        }
+    }
+
+
+    static updateTaskStatus = async (req: Request, res: Response) => {
+        try {
+            const { status } = req.body;
+            req.task.status = status;
+            await req.task.save();
+            res.status(200).json("Estado actualizado exitosamente");
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Error al buscar la tarea.' });
