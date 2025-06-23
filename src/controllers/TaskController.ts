@@ -15,7 +15,7 @@ export class TaskController {
             res.status(201).json({ message: 'Tarea creada exitosamente', task });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Error creando la tarea.' });
+            res.status(500).json({ error: 'Error creando la tarea.' });
         }
     }
 
@@ -23,12 +23,12 @@ export class TaskController {
         try {
             const task = await Task.find({ project: req.project.id }).populate('project', 'projectName clienteName description');
             if (!task || task.length === 0) {
-                res.status(404).json({ message: 'No se encontraron tareas para este proyecto.' });
+                res.status(404).json({ error: 'No se encontraron tareas para este proyecto.' });
             }
             res.status(200).json(task);
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Error al buscar la tarea.' });
+            res.status(500).json({ error: 'Error al buscar la tarea.' });
         }
     }
     static getTaskById = async (req: Request, res: Response) => {
@@ -36,7 +36,7 @@ export class TaskController {
             res.status(200).json(req.task);
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Error al buscar la tarea.' });
+            res.status(500).json({ error: 'Error al buscar la tarea.' });
         }
     }
 
@@ -48,7 +48,7 @@ export class TaskController {
             res.status(200).json("Tarea actualizada exitosamente");
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Error al buscar la tarea.' });
+            res.status(500).json({ error: 'Error al buscar la tarea.' });
         }
     }
 
@@ -62,7 +62,7 @@ export class TaskController {
             res.status(200).json("Tarea eliminada exitosamente");
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Error al buscar la tarea.' });
+            res.status(500).json({ error: 'Error al buscar la tarea.' });
         }
     }
 
@@ -75,7 +75,7 @@ export class TaskController {
             res.status(200).json("Estado actualizado exitosamente");
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Error al buscar la tarea.' });
+            res.status(500).json({ error: 'Error al buscar la tarea.' });
         }
     }
 }

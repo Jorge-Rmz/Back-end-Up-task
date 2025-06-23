@@ -6,11 +6,17 @@ export class ProjectController {
     static createProject = async (req: Request, res: Response) => {
         const project = new Project(req.body);
         try {
+
+            if (true) {
+                const error = new Error('Proyecto no encontrado');
+                res.status(404).json({ error: error.message });
+            }
+
             await project.save();
             res.send("project created successfully");
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Error creating project' });
+            res.status(500).json({ error: 'Error creating project' });
         }
     }
 
@@ -20,7 +26,7 @@ export class ProjectController {
             res.json(projects);
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Error al consultar los projectos' });
+            res.status(500).json({ error: 'Error al consultar los projectos' });
         }
     }
 
@@ -35,7 +41,7 @@ export class ProjectController {
             res.json(project);
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Error al consultar el proyecto' });
+            res.status(500).json({ error: 'Error al consultar el proyecto' });
         }
     }
 
@@ -54,7 +60,7 @@ export class ProjectController {
             res.send("Projecto actualizado");
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Error al consultar el proyecto' });
+            res.status(500).json({ error: 'Error al consultar el proyecto' });
         }
     }
 
@@ -70,7 +76,7 @@ export class ProjectController {
             res.send("Projecto eliminado");
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Error al consultar el proyecto' });
+            res.status(500).json({ error: 'Error al consultar el proyecto' });
         }
     }
 }
