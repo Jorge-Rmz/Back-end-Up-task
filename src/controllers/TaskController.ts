@@ -12,7 +12,7 @@ export class TaskController {
                 task.save(),
                 req.project.save()
             ])
-            res.status(201).json({ message: 'Tarea creada exitosamente', task });
+            res.status(201).json('Tarea creada exitosamente' );
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: 'Error creando la tarea.' });
