@@ -3,7 +3,7 @@ import type { Request, Response } from 'express'
 import User from '../models/User';
 import { hashPassword } from '../utils/auth';
 import Token from '../models/Token';
-import { generateToken, checkPassword } from '../utils/token';
+import { generateToken } from '../utils/token';
 import { transporter } from '../config/nodemailer';
 import { AuthEmail } from '../emails/AuthEmail';
 import { token } from 'morgan';
@@ -89,7 +89,7 @@ export class AuthController {
                 token.user = user.id;
                 token.token = generateToken();
                 await token.save();
-                
+
                 //enviar el email
                 AuthEmail.sendConfirmationEmail({
                     email: user.email,
@@ -102,13 +102,47 @@ export class AuthController {
             // Verificar contraseña
             const isPasswordValid = await checkPassword(password, user.password);
             if (!isPasswordValid) {
-                return res.status(401).json({ error: 'Contraseña incorrecta' });
-            }            
+                res.status(401).json({ error: 'Contraseña incorrecta' });
+            }
 
-            res.sendStatus(200).json({ message: 'Inicio de sesión exitoso'})
+            res.sendStatus(200).json({ message: 'Inicio de sesión exitoso' })
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: 'Error iniciando sesión' });
+        }
+    }
+
+    static requestConfirmationCode = async (req: Request, res: Response) => {
+        try {
+            const { email } = req.body;
+
+            //Usuario existe
+            const user = await User.findOne({ email });
+            if (!user) {
+                res.status(404).json({ error: 'Usuario no existente' });
+            }
+            if( user.confirmed ) {
+                res.status(403).json({ error: 'Cuenta ya confirmada' });
+            }
+
+            //Generar token de confirmación
+            const token = new Token();
+            token.user = user.id;
+            token.token = generateToken();
+
+            //enviar el email
+            AuthEmail.sendConfirmationEmail({
+                email: user.email,
+                name: user.name,
+                token: token.token
+            });
+
+            await token.save();
+
+            res.status(201).json('Nuevo token enviado, revisa tu email para confirmar tu cuenta');
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Error generando un nuevo token' });
         }
     }
 
