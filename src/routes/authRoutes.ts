@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import { AuthController } from '../controllers/AuthController'
 import { handleInputErors } from '../middleware/validation';
 
@@ -9,9 +9,9 @@ router.post('/create-account',
     body('name')
         .notEmpty().withMessage('El nombre no puede ir vacio'),
     body('password')
-        .isLength( {min: 8} ).withMessage('La contraseña no puede ser menor a 8 caracteres'),
-    body('password_confirmation').custom((value, {req}) => {
-        if( value !== req.body.password ){
+        .isLength({ min: 8 }).withMessage('La contraseña no puede ser menor a 8 caracteres'),
+    body('password_confirmation').custom((value, { req }) => {
+        if (value !== req.body.password) {
             throw new Error('Los password no son iguales')
         }
         return true;
@@ -21,14 +21,14 @@ router.post('/create-account',
     handleInputErors,
     AuthController.createAccount);
 
-router.post('/confirm-account', 
+router.post('/confirm-account',
     body('token')
         .notEmpty().withMessage('El token no puede ir vacio'),
     handleInputErors,
     AuthController.confirmAccount
 );
 
-router.post('/login', 
+router.post('/login',
     body('password')
         .notEmpty().withMessage('La contraseña no puede estar vacia'),
     body('email')
@@ -37,11 +37,40 @@ router.post('/login',
     AuthController.login
 );
 
-router.post('/request-code', 
+router.post('/request-code',
     body('email')
         .isEmail().withMessage('E-mail no valido'),
     handleInputErors,
     AuthController.requestConfirmationCode
 );
 
-export default router 
+router.post('/forgot-password',
+    body('email')
+        .isEmail().withMessage('E-mail no valido'),
+    handleInputErors,
+    AuthController.forgotPassword
+);
+
+router.post('/validate-token',
+    body('token')
+        .notEmpty().withMessage('El token no puede ir vacio'),
+    handleInputErors,
+    AuthController.validateToken
+);
+
+router.post('/update-password/:token',
+    param('token')
+        .isNumeric().withMessage('Token no valido'),
+    body('password')
+        .isLength({ min: 8 }).withMessage('La contraseña no puede ser menor a 8 caracteres'),
+    body('password_confirmation').custom((value, { req }) => {
+        if (value !== req.body.password) {
+            throw new Error('Los password no son iguales')
+        }
+        return true;
+    }),
+    handleInputErors,
+    AuthController.updatePasswordWithToken
+);
+
+export default router;  

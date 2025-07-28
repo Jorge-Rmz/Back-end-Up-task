@@ -1,6 +1,6 @@
 import { transporter } from "../config/nodemailer";
 
-interface IEmail{
+interface IEmail {
     email: string;
     name: string;
     token?: string;
@@ -21,4 +21,20 @@ export class AuthEmail {
                 `,
         });
     }
+
+    static sendPasswordResetToken = async (user: IEmail) => {
+        await transporter.sendMail({
+            from: '"UpTask" <admin@uptask.com>',
+            to: user.email,
+            subject: 'Restablece tu password en UpTask',
+            text: `Hola ${user.name}, por favor restablece tu password en UpTask`,
+            html: `<p>Hola ${user.name}, has solicitado restablecer tu password</p>
+                <p>Haz click en el siguiente enlace para restablecer tu password:
+                <a href="${process.env.FRONTEND_URL}/auth/new-password">Restablecer password</a></p>
+                <p>Ingresa el código: <b>${user.token}</b></p>
+                <p>Este token expira en 10 minutos</p>
+                `,
+        });
+    }
+
 }
